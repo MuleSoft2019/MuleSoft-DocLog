@@ -1,0 +1,13 @@
+{
+  "sampleData": {
+    "25defea2-47a9-42cc-9391-5efba016ecb1": {
+      "payload": "sample_data/object.dwl"
+    },
+    "70b3d5ef-4c26-4403-811f-073f373b5f0e": {
+      "payload": "sample_data/object_1.dwl"
+    },
+    "a881ddfb-4a39-4be1-9066-78ec24115e55": {
+      "payload": "sample_data/envelope.xml"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+<wsdl:definitions xmlns:tns="http://www.capita.co.uk/clps/services/v1.0/documentloggingservice" 
+                  xmlns:sch="http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  name="DocumentLoggingService_v1" 
+                  xmlns:common="http://www.capita.co.uk/clps/schema/v1.0/commonservice"
+                  targetNamespace="http://www.capita.co.uk/clps/services/v1.0/documentloggingservice">
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema" schemaLocation="./xsd/DocumentLoggingService_v1.xsd"/>
+			<import namespace="http://www.capita.co.uk/clps/schema/v1.0/commonservice" schemaLocation="./xsd/CommonServiceTypeLibraryV1.0.0.xsd"/>
+		</schema>
+	</wsdl:types>
+	
+	<wsdl:message name="InsertLogRequest">
+		<wsdl:part name="header" element="common:Identification"/>
+		<wsdl:part name="request" element="sch:insertLogRequest"/>
+	</wsdl:message>
+	<wsdl:message name="InsertLogResponse">
+		<wsdl:part name="response" element="sch:insertLogResponse"/>
+	</wsdl:message>
+	
+	<wsdl:message name="UpdateLogRequest">
+		<wsdl:part name="header" element="common:Identification"/>
+		<wsdl:part name="request" element="sch:updateLogRequest"/>
+	</wsdl:message>
+	<wsdl:message name="UpdateLogResponse">
+		<wsdl:part name="response" element="sch:updateLogResponse"/>
+	</wsdl:message>
+	
+	<wsdl:message name="InsertExtraDataRequest">
+		<wsdl:part name="header" element="common:Identification"/>
+		<wsdl:part name="request" element="sch:insertExtraDataRequest"/>
+	</wsdl:message>
+	<wsdl:message name="InsertExtraDataResponse">
+		<wsdl:part name="response" element="sch:insertExtraDataResponse"/>
+	</wsdl:message>
+	
+	<wsdl:portType name="DocumentLoggingServicePort">
+		<wsdl:operation name="insertLog">
+			<wsdl:input message="tns:InsertLogRequest"/>
+			<wsdl:output message="tns:InsertLogResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="updateLog">
+			<wsdl:input message="tns:UpdateLogRequest"/>
+			<wsdl:output message="tns:UpdateLogResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="insertExtraData">
+			<wsdl:input message="tns:InsertExtraDataRequest"/>
+			<wsdl:output message="tns:InsertExtraDataResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	
+	<wsdl:binding name="DocumentLoggingServiceBinding" type="tns:DocumentLoggingServicePort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="insertLog">
+			<soap:operation soapAction="http://www.capita.co.uk/clps/services/v1.0/documentloggingservice/insertlog"/>
+			<wsdl:input>
+			    <soap:header message="tns:InsertLogRequest" part="header" use="literal"/>
+				<soap:body use="literal" parts="request"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="updateLog">
+			<soap:operation soapAction="http://www.capita.co.uk/clps/services/v1.0/documentloggingservice/updatelog"/>
+			<wsdl:input>
+			    <soap:header message="tns:UpdateLogRequest" part="header" use="literal"/>
+				<soap:body use="literal" parts="request"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="insertExtraData">
+			<soap:operation soapAction="http://www.capita.co.uk/clps/services/v1.0/documentloggingservice/insertextradata"/>
+			<wsdl:input>
+			    <soap:header message="tns:InsertExtraDataRequest" part="header" use="literal"/>
+				<soap:body use="literal" parts="request"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="DocumentLoggingServiceBindingService">
+		<wsdl:port name="DocumentLoggingServiceBindingQSPort" binding="tns:DocumentLoggingServiceBinding">
+			<soap:address location="http://localhost:7001/clpsservices/v0.1/documentloggingservice"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

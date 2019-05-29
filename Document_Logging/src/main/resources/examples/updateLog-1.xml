@@ -1,0 +1,29 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://www.capita.co.uk/clps/schema/v1.0/commonservice" xmlns:doc="http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema">
+   <soapenv:Header>
+      <com:Identification>
+         <!--Optional:-->
+         <com:UsernameToken>HiteshR</com:UsernameToken>
+         <com:clientAccount>FriendsLife</com:clientAccount>
+         <com:partnerName>Not_APPLICABLE</com:partnerName>
+         <com:requestDate>2018-04-03T10:36:01</com:requestDate>
+         <com:instanceID>NA</com:instanceID>
+         <com:environment>UAT</com:environment>
+      </com:Identification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <doc:updateLogRequest>
+         <!--Optional:-->
+         <doc:updateLogRequestList>
+            <!--1 or more repetitions:-->
+            <doc:updateLogRequestItem>
+               <doc:guid>58633394dd114377bdb8def9125c1c7d</doc:guid>
+               <doc:capitaLetterID>CAP114377bdb8def9125c1c7d</doc:capitaLetterID>
+               <doc:date>2018-04-03T10:36:01</doc:date>
+               <doc:stage>700</doc:stage>
+               <!--Optional:-->
+               <doc:finalStage>900</doc:finalStage>
+            </doc:updateLogRequestItem>
+         </doc:updateLogRequestList>
+      </doc:updateLogRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

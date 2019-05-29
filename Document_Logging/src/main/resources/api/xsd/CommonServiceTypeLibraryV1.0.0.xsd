@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.capita.co.uk/clps/schema/v1.0/commonservice" elementFormDefault="qualified" targetNamespace="http://www.capita.co.uk/clps/schema/v1.0/commonservice">
+	<complexType name="CommonHeaderType">
+		<annotation>
+			<documentation>The common header needs to be used by majority of the
+				ESB services to receive some of the common information which is
+				mainly useful for routing and decision making by the ESB services.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="sourceSystem" nillable="true" type="tns:SourceSystemType">
+				<annotation>
+					<documentation>
+						It is used to indicate the source system which
+						will be used by the ESB to perform the
+						corresponding transaction. For example, if its
+						ElixirV4 and the transaction is
+						RetrieveCustomerDetails() then the customer
+						details will be retrieved from ElixirV4 only.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="clientAccount" nillable="true" type="tns:ClientAccountType">
+				<annotation>
+					<documentation>
+						The client account is the client name such as
+						RBS, TCM, HBOS etc which may have one or more
+						partner (or company) accounts like Natwest,
+						Ulster etc. For example, a client account RBS
+						has a partner (or company) account Natwest. In
+						some cases the client account and partner name
+						are the same, e.g. in the case of TCM(The
+						Children's Mutual)
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="partnerName" nillable="true" type="string">
+				<annotation>
+					<documentation>The partner name related to the client account. For
+						example, a client account RBS
+						has a partner or company account Natwest. In
+						some cases the client account and partner names
+						are the same, e.g. in the case of TCM(The
+						Children's Mutual)
+					</documentation>
+				</annotation>
+			</element>
+
+		</sequence>
+	</complexType>
+	<complexType name="ContractEngineHeaderType">
+		<annotation>
+			<documentation>The ClientAccount header is used in some ESB services
+				to receive some of the common information which is mainly useful for
+				routing and decision making by the ESB services. </documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="clientAccount" nillable="true" type="tns:ClientAccountType">
+				<annotation>
+					<documentation>
+						The client account is the client name such as
+						RBS, TCM, HBOS etc which may have one or more
+						partner (or company) accounts like Natwest,
+						Ulster etc. For example, a client account RBS
+						has a partner (or company) account Natwest. In
+						some cases the client account and partner name
+						are the same, e.g. in the case of TCM(The
+						Children's Mutual)
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="1" name="environment" type="tns:EnvironmentType"/>
+
+		</sequence>
+	</complexType>
+	<simpleType name="SourceSystemType">
+		<restriction base="string">
+			<enumeration value="UNIFIED"/>
+			<enumeration value="ULL"/>
+			<enumeration value="UP1"/>
+			<enumeration value="UP2"/>
+			<enumeration value="ANP"/>
+			<enumeration value="APOLLO"/>
+			<enumeration value="CPDF"/>
+			<enumeration value="ElixirV4"/>
+			<enumeration value="ELIXIRV4"/>
+			<enumeration value="ElixirV3"/>
+			<enumeration value="LIFE"/>
+			<enumeration value="PEGASUS"/>
+			<enumeration value="CKB"/>
+			<enumeration value="TANDEM"/>
+			<enumeration value="KLM"/>
+			<enumeration value="CLIMATE"/>
+			<enumeration value="COMPASS"/>
+			<enumeration value="NOT_APPLICABLE"/>
+			<!-- below added for ALAC -->
+			<enumeration value="UNISURE"/>
+			<enumeration value="CLIENTCOMM"/>
+			<enumeration value="HILLSAMUEL"/>
+			<enumeration value="COMPASS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ClientAccountType">
+		<restriction base="string">
+			<enumeration value="HBOS"/>
+			<enumeration value="CHES"/>
+			<enumeration value="TCM"/>
+			<enumeration value="FriendsLife"/>
+			<enumeration value="NOT_APPLICABLE"/>
+			<!-- below added for ALAC -->
+			<enumeration value="ALAC"/>
+			<enumeration value="Friends"/>
+			<enumeration value="RBS"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="DirectDebitActionType">
+		<restriction base="string">
+			<enumeration value="NEW"/>
+			<enumeration value="CANCEL"/>
+			<enumeration value="UPDATE"/>
+		</restriction>
+	</simpleType>
+	<element name="header" type="tns:CommonHeaderType"/>
+	<element name="applicationHeaders" type="tns:CommonApplicationHeaderType"/>
+
+	<complexType name="CommonApplicationHeaderType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="header" type="tns:CommonAppilcationHeaderType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="CommonAppilcationHeaderType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="name" nillable="true" type="string"/>
+			<element maxOccurs="1" minOccurs="1" name="value" nillable="true" type="string"/>
+		</sequence>
+	</complexType>
+
+
+	<complexType name="CommonRequestType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="header" type="tns:CommonHeaderType"/>
+		</sequence>
+	</complexType>
+	<simpleType name="EnvironmentType">
+		<restriction base="string">
+			<enumeration value="DEV"/>
+			<enumeration value="SIT"/>
+			<enumeration value="UAT"/>
+			<enumeration value="PROD"/>
+		</restriction>
+	</simpleType>
+	<complexType name="MonetaryAmount">
+		<sequence>
+			<element default="GBP" maxOccurs="1" minOccurs="0" name="currency" nillable="true" type="tns:CurrencyCode"/>
+			<element maxOccurs="1" minOccurs="0" name="amount" nillable="true" type="tns:DecimalAmount"/>
+		</sequence>
+	</complexType>
+	<complexType name="ContractEngineRequestType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="header" type="tns:ContractEngineHeaderType"/>
+		</sequence>
+	</complexType>
+	<complexType name="CommonResponseType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="header" type="tns:CommonHeaderType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="AddressType">
+		<sequence>
+			<element minOccurs="0" name="line_1" type="tns:AddressLine"/>
+			<element minOccurs="0" name="line_2" type="tns:AddressLine"/>
+			<element minOccurs="0" name="line_3" type="tns:AddressLine"/>
+			<element minOccurs="0" name="line_4" type="tns:AddressLine"/>
+			<element minOccurs="0" name="country" type="tns:Country"/>
+			<element minOccurs="0" name="postcode" type="tns:Postcode"/>
+		</sequence>
+	</complexType>
+   
+	<complexType name="PolicyAddressType">
+	   <complexContent>
+	       <extension base="tns:AddressType">
+		       <sequence>
+		       		<element minOccurs="0" name="line_5" type="tns:AddressLine"/>
+		       		<element minOccurs="0" name="poBox" type="string"/>
+					<element minOccurs="0" name="county" type="string"/>
+					<element minOccurs="0" name="countryName" type="string"/>       
+			  		<element maxOccurs="1" minOccurs="0" name="customerNumber" type="string"/>
+			  		<element maxOccurs="1" minOccurs="0" name="addressType" type="string"/>
+			  		<element maxOccurs="1" minOccurs="0" name="lastUpdatedDate" type="date"/>
+			  		<element maxOccurs="1" minOccurs="0" name="contactStartDate" type="date"/>
+			  		<element maxOccurs="1" minOccurs="0" name="contactEndDate" type="date"/>
+		       </sequence>
+	       </extension>
+	   </complexContent>
+	</complexType>
+	
+	<simpleType name="DecimalAmount">
+		<restriction base="decimal"/>
+	</simpleType>
+
+	<simpleType name="CurrencyCode">
+		<restriction base="string">
+			<enumeration value="ATS"/>
+			<enumeration value="AUD"/>
+			<enumeration value="BEF"/>
+			<enumeration value="CAD"/>
+			<enumeration value="CHF"/>
+			<enumeration value="CYP"/>
+			<enumeration value="DEM"/>
+			<enumeration value="DKK"/>
+			<enumeration value="ESP"/>
+			<enumeration value="EUR"/>
+			<enumeration value="FIM"/>
+			<enumeration value="FRF"/>
+			<enumeration value="GBP"/>
+			<enumeration value="GRD"/>
+			<enumeration value="HKD"/>
+			<enumeration value="IEP"/>
+			<enumeration value="ITL"/>
+			<enumeration value="JPY"/>
+			<enumeration value="LUF"/>
+			<enumeration value="NLG"/>
+			<enumeration value="NOK"/>
+			<enumeration value="NZD"/>
+			<enumeration value="PTE"/>
+			<enumeration value="SAR"/>
+			<enumeration value="SEK"/>
+			<enumeration value="SGD"/>
+			<enumeration value="TRL"/>
+			<enumeration value="USD"/>
+			<enumeration value="ZAR"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="AddressLine">
+		<restriction base="string">
+			<maxLength value="50"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="Country">
+		<restriction base="string">
+			<maxLength value="35"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="Postcode">
+		<restriction base="string"/>
+	</simpleType>
+
+	<simpleType name="AccountingDate">
+		<restriction base="string">
+		    <length value="10"/>
+		</restriction>
+	</simpleType>
+	
+		<simpleType name="AccountingDayMonthDate">
+		<restriction base="string">
+		    <length value="5"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="ReprojectionRating">
+		<restriction base="string">
+			<enumeration value="Red"/>
+			<enumeration value="Amber"/>
+			<enumeration value="Green"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="dataWarnings">
+		<restriction base="string">
+			<enumeration id="ERR0109" value="WARNING: Policy not in With Profits from EDA. TB (if any) based on WP IN DATE"/>
+			<enumeration id="ERR0110" value="WARNING: Transactions pre Rem Action Date (incl) on microfiche"/>
+			<enumeration id="ERR0111" value="WARNING: Do Not Deal"/>
+			<enumeration id="ERR0112" value="WARNING: Bank marker set"/>
+			<enumeration id="ERR0113" value="WARNING: Unit history not up to date"/>
+			<enumeration id="ERR0114" value="WARNING: Case on the mismatch list"/>
+			<enumeration id="ERR0115" value="WARNING: Do not deal"/>
+			<enumeration id="ERR0116" value="WARNING: Bid price not available"/>
+			<enumeration id="ERR0117" value="WARNING: Surrender penalties"/>
+			<enumeration id="ERR0118" value="WARNING: MVR may apply"/>
+			<enumeration id="ERR0119" value="WARNING: Surrender penalties and MVR may apply"/>
+			<enumeration id="ERR0120" value="WARNING: No units / notional"/>
+			<enumeration id="ERR0121" value="WARNING: Switch into WP fund"/>
+			<enumeration id="ERR0122" value="WARNING: Return of capital may apply"/>
+			<enumeration id="ERR0123" value="WARNING: Discrepancy exists on the monthly reconciliation of units and premiums report"/>
+			<enumeration id="ERR0124" value="WARNING: Transaction history not up to date"/>
+			<enumeration id="ERR0125" value="WARNING: Do not deal - unit history not up to date"/>
+			<enumeration id="ERR0126" value="WARNING: Outstanding amount  in respect of admin fee / mortality deductions exists     "/>
+			<enumeration id="ERR0127" value="WARNING: Due date assumed paid not equal to the due date actually paid"/>
+			<enumeration id="ERR0128" value="WARNING: Money on Suspense                     "/>
+			<enumeration id="ERR0129" value="WARNING: System unable to produce a value in respect of personal units (Fund 6) - please refer to case manager    "/>
+			<enumeration id="ERR0130" value="WARNING: Client has outstanding liabilities - refer case to ADC for expert advice"/>
+			<enumeration id="ERR0131" value="WARNING: Premium specials present"/>
+			<enumeration id="ERR0132" value="WARNING: Ees/Ers split not calculated - refer to Con / Ben table"/>
+			<enumeration id="ERR0133" value="WARNING: Premium paid net of commission"/>
+			<enumeration id="ERR0134" value="WARNING: Manual collection - refer to LPO special schemes"/>
+			<enumeration id="ERR0135" value="WARNING: Premium details have been archived"/>
+			<enumeration id="ERR0136" value="WARNING: Excluding archived premiums"/>
+			<enumeration id="ERR0137" value="WARNING: Paid up or matured"/>
+			<enumeration id="ERR0138" value="WARNING: Unit history not up to date - do not give value"/>
+			<enumeration id="ERR0139" value="WARNING: Surrender penalties"/>
+			<enumeration id="ERR0140" value="WARNING: MVR may apply"/>
+			<enumeration id="ERR0141" value="WARNING: No units / notional"/>
+			<enumeration id="ERR0142" value="WARNING: Also had COLI"/>
+			<enumeration id="ERR0143" value="WARNING: Manual cheque issued in this period"/>
+			<enumeration id="ERR0144" value="WARNING: Growth rates may vary – see notes"/>
+			<enumeration id="ERR0145" value="WARNING: a Tax Reclaim for the tax group has been performed within this period - refer to your TA or ADC"/>
+			<enumeration id="ERR0146" value="WARNING: Payment totals within this period are inconsistent with the Tax totals for the tax group - refer to your TA or ADC"/>
+			<enumeration id="ERR0147" value="WARNING: Sum of gross or taxable amount within this period is negative for the tax group - refer to your TA or ADC"/>
+			<enumeration id="ERR0148" value="WARNING: End of year voucher/P60 is being handled manually - refer to ADC"/>
+			<enumeration id="ERR0149" value="WARNING: Total gross payment amount minus tax amount does not equal net amount - refer to your TA or ADC"/>
+			<enumeration id="ERR0150" value="WARNING: Policy has changed tax groups within this period - refer to ADC"/>
+			<enumeration id="ERR0151" value="WARNING: Bulk scheme"/>
+			<enumeration id="ERR0152" value="WARNING: Client has policies migrated from Tandem. Data pre 6/04/2004 may not be included on this screen - refer to ADC"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="IndexationType">
+		<restriction base="string">
+			<enumeration value="Fixed"/>
+			<enumeration value="Level"/>
+			<enumeration value="LPI"/>
+			<enumeration value="NAEI"/>
+			<enumeration value="NAEI Plus Fixed"/>
+			<enumeration value="RPI"/>
+			<enumeration value="RPI Plus Fixed"/>
+			<enumeration value="Salary Led"/>
+		</restriction>
+	</simpleType>
+		<simpleType name="IncreaseType">
+		<restriction base="string">
+			<enumeration value="Fixed"/>
+			<enumeration value="Level"/>
+			<enumeration value="LPI"/>
+			<enumeration value="AWEI"/>
+			<enumeration value="AWEI Plus Fixed"/>
+			<enumeration value="RPI"/>
+			<enumeration value="RPI Plus Fixed"/>
+			<enumeration value="Salary Led"/>
+		</restriction>
+	</simpleType>
+
+		<simpleType name="PaymentTimingCode">
+		<restriction base="string">
+			<enumeration value="In Advance"/>
+			<enumeration value="Advance"/>
+			<enumeration value="Arrears"/>
+			<enumeration value="In Arrears"/>
+			<enumeration value="Specified Day"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CoverBasis">
+		<restriction base="string">
+			<enumeration value="First Event"/>
+			<enumeration value="Last Event"/>
+			<enumeration value="Multiple Events"/>
+			<enumeration value="Single Life"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="Decimal-2DP-Amount">
+		<restriction base="decimal">
+			<totalDigits value="17"/>
+			<fractionDigits value="2"/>
+			<minInclusive value="-999999999999999.99"/>
+			<maxInclusive value="999999999999999.99"/>
+		</restriction>
+	</simpleType>
+
+	<complexType name="ErrorType">
+		<sequence>
+			<element name="sourceSystem" type="string"/>
+			<element name="errorMessage" type="string"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="ErrorsType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="error" type="tns:ErrorType"/>
+		</sequence>
+	</complexType>
+
+	<element name="Identification" type="tns:IdentificationHeaderType"/>
+	
+    <complexType name="IdentificationHeaderType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="UsernameToken" type="string"/>
+			<element ref="tns:clientAccount">
+				<annotation>
+					<documentation>e.g. Friends_Life</documentation>
+				</annotation>
+			</element>
+			<element ref="tns:partnerName">
+				<annotation>
+					<documentation>sub account for each cllientAccount e.g. WinterthurLife</documentation>
+				</annotation>
+			</element>
+			<element ref="tns:requestDate">
+				<annotation>
+					<documentation>e.g. 2015-03-18T12:34:32</documentation>
+				</annotation>
+			</element>
+			<element ref="tns:instanceID">
+				<annotation>
+					<documentation>a GUID for each request</documentation>
+				</annotation>
+			</element>
+			<element ref="tns:environment">
+				<annotation>
+					<documentation>e.g. DEVT or USER or SYST or PERF or PROD</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<element name="clientAccount">
+		<simpleType>
+			<restriction base="string">
+				<enumeration value="Friends_Life"/>
+			</restriction>
+		</simpleType>
+	</element>
+	<element name="requestDate" type="dateTime"/>
+	<element name="environment">
+		<simpleType>
+			<restriction base="string">
+				<enumeration value="DEV"/>
+				<enumeration value="SIT"/>
+				<enumeration value="SIT1"/>
+				<enumeration value="SIT2"/>
+				<enumeration value="UAT"/>
+				<enumeration value="UAT1"/>
+				<enumeration value="UAT2"/>
+				<enumeration value="PERF"/>
+				<enumeration value="PROD"/>
+			</restriction>
+		</simpleType>
+	</element>
+	<element name="instanceID" type="tns:guid"/>
+	<simpleType name="guid">
+		<annotation>
+			<documentation xml:lang="en">
+                The representation of a GUID, generally the id of an element.
+            </documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}"/>
+		</restriction>
+	</simpleType>
+	<element name="partnerName">
+		<simpleType>
+			<restriction base="string">
+				<enumeration value="NOT_APPLICABLE"/>
+			</restriction>
+		</simpleType>
+	</element>
+	
+	
+</schema>

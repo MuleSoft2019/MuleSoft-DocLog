@@ -1,0 +1,35 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://www.capita.co.uk/clps/schema/v1.0/commonservice" xmlns:doc="http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema">
+   <soapenv:Header>
+      <com:Identification>
+         <!--Optional:-->
+         <com:UsernameToken></com:UsernameToken>
+         <com:clientAccount></com:clientAccount>
+         <com:partnerName></com:partnerName>
+         <com:requestDate></com:requestDate>
+         <com:instanceID></com:instanceID>
+         <com:environment></com:environment>
+      </com:Identification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <doc:insertLogRequest>
+         <!--Optional:-->
+         <doc:insertLogRequestList>
+            <!--1 or more repetitions:-->
+            <doc:insertLogRequestItem>
+               <doc:companyCode></doc:companyCode>
+               <doc:guid></doc:guid>
+               <doc:date></doc:date>
+               <doc:stage></doc:stage>
+               <!--Optional:-->
+               <doc:finalStage></doc:finalStage>
+               <doc:letterID></doc:letterID>
+               <doc:capitaLetterID></doc:capitaLetterID>
+               <!--Optional:-->
+               <doc:policyNumber></doc:policyNumber>
+               <!--Optional:-->
+               <doc:customerName></doc:customerName>
+            </doc:insertLogRequestItem>
+         </doc:insertLogRequestList>
+      </doc:insertLogRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

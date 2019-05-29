@@ -1,0 +1,97 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema" targetNamespace="http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema" elementFormDefault="qualified">
+	
+    <xsd:element name="insertLogRequest" type="tns:InsertLogRequestType"/>
+	<xsd:element name="insertLogResponse" type="tns:InsertLogResponseType"/>
+	<xsd:element name="insertExtraDataResponse" type="tns:InsertExtraDataResponseType"/>
+	<xsd:element name="updateLogRequest" type="tns:UpdateLogRequestType"/>
+	<xsd:element name="updateLogResponse" type="tns:UpdateLogResponseType"/>
+	<xsd:element name="insertExtraDataRequest" type="tns:InsertExtraDataRequestType"/>
+	     
+ 
+	<xsd:complexType name="InsertLogRequestType">
+				<xsd:sequence>
+                     <xsd:element name="insertLogRequestList" type="tns:InsertLogRequestListType" minOccurs="0" maxOccurs="1"/>
+ 				</xsd:sequence>
+	</xsd:complexType>
+        
+    <xsd:complexType name="InsertLogRequestListType">
+		<xsd:sequence>
+			<xsd:element name="insertLogRequestItem" type="tns:InsertLogItemType" nillable="true" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="UpdateLogRequestType">
+				<xsd:sequence>
+                     <xsd:element name="updateLogRequestList" type="tns:UpdateLogRequestListType" minOccurs="0" maxOccurs="1"/>
+ 				</xsd:sequence>
+	</xsd:complexType>
+        
+    <xsd:complexType name="UpdateLogRequestListType">
+		<xsd:sequence>
+			<xsd:element name="updateLogRequestItem" type="tns:UpdateLogItemType" nillable="true" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+        
+ 	<xsd:complexType name="InsertExtraDataRequestType">
+				<xsd:sequence>
+                     <xsd:element name="insertExtraDataRequestList" type="tns:InsertExtraDataListType" minOccurs="0" maxOccurs="1"/>
+ 				</xsd:sequence>
+	</xsd:complexType>
+        
+    <xsd:complexType name="InsertExtraDataListType">
+		<xsd:sequence>         
+			<xsd:element name="insertExtraDataRequestItem" type="tns:InsertExtraDataType" nillable="true" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+       <xsd:complexType name="InsertLogItemType">
+		<xsd:sequence>
+			<xsd:element name="companyCode" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="guid" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="date" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="stage" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="finalStage" type="xsd:integer" nillable="true" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="letterID" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="capitaLetterID" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="policyNumber" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="customerName" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="UpdateLogItemType">
+		<xsd:sequence>
+			<xsd:element name="guid" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="capitaLetterID" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="date" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="stage" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="finalStage" type="xsd:integer" nillable="true" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+    
+    <xsd:complexType name="InsertExtraDataType">
+		<xsd:sequence>
+			<xsd:element name="guid" type="xsd:string" />
+			<xsd:element name="key" type="xsd:string" />
+			<xsd:element name="value" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	          
+	<xsd:complexType name="InsertLogResponseType">
+		<xsd:sequence>
+			<xsd:element name="insertLogResponse" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="UpdateLogResponseType">
+		<xsd:sequence>
+			<xsd:element name="updateLogResponse" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="InsertExtraDataResponseType">
+		<xsd:sequence>
+			<xsd:element name="insertExtraDataResponse" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+</xsd:schema>

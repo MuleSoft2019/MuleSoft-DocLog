@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit-soap="http://www.mulesoft.org/schema/mule/apikit-soap" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/apikit-soap http://www.mulesoft.org/schema/mule/apikit-soap/current/mule-apikit-soap.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+    <http:listener-config name="api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8085"/>
+    </http:listener-config>
+    <apikit-soap:config httpStatusVarName="httpStatus" name="soapkit-config" port="DocumentLoggingServiceBindingQSPort" service="DocumentLoggingServiceBindingService" wsdlLocation="DocumentLoggingService_v1.wsdl"/>
+    <jms:config name="JMS_Config" doc:name="JMS Config" doc:id="6c6d62ce-219f-457c-9346-7cf5ee16e1a4" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:caching-strategy >
+				<jms:no-caching />
+			</jms:caching-strategy>
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="/DocumentLoggingServiceBindingService/DocumentLoggingServiceBindingQSPort" allowedMethods="POST">
+            <http:response statusCode="#[attributes.protocolHeaders.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[attributes.protocolHeaders.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <apikit-soap:router config-ref="soapkit-config">
+            <apikit-soap:attributes><![CDATA[#[%dw 2.0
+              output application/java
+              ---
+              {
+                  headers: attributes.headers,
+                  method: attributes.method,
+                  queryString: attributes.queryString
+            }]]]></apikit-soap:attributes>
+        </apikit-soap:router>
+    </flow>
+    <flow name="insertLog:\soapkit-config">
+        <logger level="INFO" doc:name="Logger----------------------&gt;" doc:id="84bc51b0-7460-40ad-946c-4668cd690b51" message="#[payload.headers.Identification.Identification]"/>
+		<ee:transform doc:id="25defea2-47a9-42cc-9391-5efba016ecb1">
+            <ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://schemas.xmlsoap.org/soap/envelope/
+ns ns01 http://www.capita.co.uk/clps/schema/v1.0/commonservice
+ns ns02 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
+---
+{
+	
+	ns0#Envelope: {
+		ns0#Header: ({
+			ns01#Identification: {
+				ns01#UsernameToken: payload.headers.Identification.Identification.UsernameToken default "",
+				ns01#clientAccount: payload.headers.Identification.Identification.clientAccount default "",
+				ns01#partnerName: payload.headers.Identification.Identification.partnerName default "",
+				ns01#requestDate: payload.headers.Identification.Identification.requestDate default "",
+				ns01#instanceID: payload.headers.Identification.Identification.instanceID default "",
+				ns01#environment: payload.headers.Identification.Identification.environment default ""
+			}
+		}),
+		ns0#Body: {
+			ns02#insertLogRequest: {
+				ns02#insertLogRequestList: {
+					ns02#insertLogRequestItem: {
+						ns02#companyCode: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#companyCode default "",
+						ns02#guid: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#guid default "",
+						ns02#date: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#date default |1815-12-10T08:15:00|,
+						ns02#stage: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#stage default 0,
+						ns02#finalStage: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#finalStage default 0,
+						ns02#letterID: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#letterID default "",
+						ns02#capitaLetterID: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#capitaLetterID default "",
+						ns02#policyNumber: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#policyNumber default "",
+						ns02#customerName: payload.body.ns02#insertLogRequest.ns02#insertLogRequestList.*ns02#insertLogRequestItem.ns02#customerName default ""
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+				<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+ns ns0 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
+---
+{
+	ns0#insertLogRequest: {
+		ns0#insertLogRequestList: {
+			(payload.body.ns0#insertLogRequest.ns0#insertLogRequestList.*ns0#insertLogRequestItem map ( insertLogRequestItem , indexOfInsertLogRequestItem ) -> {
+				ns0#insertLogRequestItem: {
+					ns0#companyCode: insertLogRequestItem.ns0#companyCode,
+					ns0#guid: insertLogRequestItem.ns0#guid,
+					ns0#date: insertLogRequestItem.ns0#date,
+					ns0#stage: insertLogRequestItem.ns0#stage,
+					ns0#finalStage: insertLogRequestItem.ns0#finalStage,
+					ns0#letterID: insertLogRequestItem.ns0#letterID,
+					ns0#capitaLetterID: insertLogRequestItem.ns0#capitaLetterID,
+					ns0#policyNumber: insertLogRequestItem.ns0#policyNumber,
+					ns0#customerName: insertLogRequestItem.ns0#customerName
+				}
+			})
+		}
+	}
+}]]></ee:set-attributes>
+            </ee:message>
+			<ee:variables >
+			</ee:variables>
+        </ee:transform>
+		<set-payload value='#[payload]' doc:name="Set Payload" doc:id="7abfde15-bd47-49ad-9456-244f95cc679e" />
+		<logger level="INFO" doc:name="Logger" doc:id="8eaf986e-7e5e-4c6d-ba1d-f59d76d48787" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="a881ddfb-4a39-4be1-9066-78ec24115e55" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://schemas.xmlsoap.org/soap/envelope/
+ns ns01 http://www.capita.co.uk/clps/schema/v1.0/commonservice
+ns ns02 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
+---
+{
+	SoapEnv: {
+		Header: {
+			Identification: {
+				UsernameToken: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#UsernameToken,
+				clientAccount: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#clientAccount,
+				partnerName: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#partnerName,
+				requestDate: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#requestDate as String,
+				instanceID: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#instanceID,
+				environment: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#environment
+			}
+		},
+		Body: {
+			insertLogRequest: {
+				insertLogRequestList: [{
+					insertLogRequestItem: {
+						companyCode: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#companyCode,
+						guid: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#guid,
+						date: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#date as String,
+						stage: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#stage as String,
+						finalStage: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#finalStage as String,
+						letterID: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#letterID,
+						capitaLetterID: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#capitaLetterID,
+						policyNumber: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#policyNumber,
+						customerName: payload.ns0#Envelope.ns0#Body.ns02#insertLogRequest.ns02#insertLogRequestList.ns02#insertLogRequestItem.ns02#customerName
+					}
+				}]
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="799c23bd-f044-401f-b75d-ecd9900cdbef" message="#[payload]"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="9b99cca1-e97c-4d46-abbb-0c0e32607b1a" />
+		<jms:publish doc:name="Publish" doc:id="5636fccb-8448-49e2-8fc1-94419a2a6c9e" config-ref="JMS_Config" destination="inbound-queue-poc2"/>
+    </flow>
+	<flow name="updateLog:\soapkit-config">
+        <ee:transform doc:id="70b3d5ef-4c26-4403-811f-073f373b5f0e">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://schemas.xmlsoap.org/soap/envelope/
+ns ns01 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
+ns ns02 http://www.capita.co.uk/clps/schema/v1.0/commonservice
+---
+{
+	ns0#Envelope: {
+		ns0#Header: {
+			ns02#Identification: {
+				ns02#UsernameToken: payload.headers.Identification.Identification.UsernameToken default "",
+				ns02#clientAccount: payload.headers.Identification.Identification.clientAccount default "",
+				ns02#partnerName: payload.headers.Identification.Identification.partnerName default "",
+				ns02#requestDate: payload.headers.Identification.Identification.requestDate default "",
+				ns02#instanceID: payload.headers.Identification.Identification.instanceID default "",
+				ns02#environment: payload.headers.Identification.Identification.environment default ""
+			}
+		},
+		ns0#Body: {
+			ns01#updateLogRequest: {
+				ns01#updateLogRequestList: {
+					ns01#updateLogRequestItem: {
+						ns01#guid: payload.body.ns01#updateLogRequest.ns01#updateLogRequestList.*ns01#updateLogRequestItem.ns01#guid default "",
+						ns01#capitaLetterID: payload.body.ns01#updateLogRequest.ns01#updateLogRequestList.*ns01#updateLogRequestItem.ns01#capitaLetterID default "",
+						ns01#date: payload.body.ns01#updateLogRequest.ns01#updateLogRequestList.*ns01#updateLogRequestItem.ns01#date default |1815-12-10T08:15:00|,
+						ns01#stage: payload.body.ns01#updateLogRequest.ns01#updateLogRequestList.*ns01#updateLogRequestItem.ns01#stage default 0,
+						ns01#finalStage: payload.body.ns01#updateLogRequest.ns01#updateLogRequestList.*ns01#updateLogRequestItem.ns01#finalStage default 0
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="81f098ea-c516-448d-9c60-741620870555" />
+		<logger level="INFO" doc:name="Logger" doc:id="6fd0c522-6d3c-4d0c-851f-5a2e2b4289e3" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3572e5e6-6fe2-4c7e-a019-5f9176f9ef57" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://schemas.xmlsoap.org/soap/envelope/
+ns ns01 http://www.capita.co.uk/clps/schema/v1.0/commonservice
+ns ns02 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
+---
+{
+	SoapEnv: {
+		Header: {
+			Identification: {
+				UsernameToken: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#UsernameToken,
+				clientAccount: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#clientAccount,
+				partnerName: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#partnerName,
+				requestDate: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#requestDate as String,
+				instanceID: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#instanceID,
+				environment: payload.ns0#Envelope.ns0#Header.ns01#Identification.ns01#environment
+			}
+		},
+		Body: {
+			updateLogRequest: {
+				updateLogRequestList: [{
+					updateLogRequestItem: {
+						guid: payload.ns0#Envelope.ns0#Body.ns02#updateLogRequest.ns02#updateLogRequestList.ns02#updateLogRequestItem.ns02#guid,
+						date: payload.ns0#Envelope.ns0#Body.ns02#updateLogRequest.ns02#updateLogRequestList.ns02#updateLogRequestItem.ns02#date as String,
+						stage: payload.ns0#Envelope.ns0#Body.ns02#updateLogRequest.ns02#updateLogRequestList.ns02#updateLogRequestItem.ns02#stage as String,
+						finalStage: payload.ns0#Envelope.ns0#Body.ns02#updateLogRequest.ns02#updateLogRequestList.ns02#updateLogRequestItem.ns02#finalStage as String,
+						capitaLetterID: payload.ns0#Envelope.ns0#Body.ns02#updateLogRequest.ns02#updateLogRequestList.ns02#updateLogRequestItem.ns02#capitaLetterID
+					}
+				}]
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="41a48a32-6bd4-41c5-a7e3-e93439512b06" message="#[payload]"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="7c2b1e47-4f47-48cf-ae90-15fa47b8c0f5" />
+		<jms:publish doc:name="Publish" doc:id="b7248b80-4025-41e0-b02f-5dc02057f79f" config-ref="JMS_Config" destination="POC1-Update"/>
+    </flow>
+    <flow name="insertExtraData:\soapkit-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope
+---
+{
+    body: {
+        soap#Fault: {
+            faultcode: "soap:Server",
+            faultstring: "Operation [insertExtraData:\soapkit-config] not implemented"
+        }
+    } write "application/xml"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>
