@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="518abf11-6d92-4cef-b4a6-4aef59131cf1" >
+		<http:listener-connection host="0.0.0.0" port="8084" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="61823f46-a592-49fb-b705-80d546a20b83" >
+		<jms:active-mq-connection username="admin" password="admin">
+			<jms:caching-strategy >
+				<jms:no-caching />
+			</jms:caching-strategy>
+			<jms:factory-configuration brokerUrl="tcp://13.95.5.15:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="87a94738-1483-4ce0-b054-deee4c18c034" >
+		<db:mssql-connection host="dbs-poc-euw-mspoc002.database.windows.net " user="mspoc002" password="qInmyp7h" databaseName="db_poc_euw_mspoc003" />
+	</db:config>
+	<flow name="testFlow" doc:id="3f8f7b2e-15e8-464a-9c0d-02838bd37588" >
+		<http:listener doc:name="Listener" doc:id="e72a976e-5ab1-47ae-ba77-ed6095067463" config-ref="HTTP_Listener_config" path="/mq2"/>
+		<jms:publish doc:name="Publish" doc:id="c19a64ee-994c-46c1-b347-ea8f8aa6fe83" config-ref="JMS_Config" destination="inbound-queue-poc2"/>
+		<logger level="INFO" doc:name="Logger" doc:id="288902a6-cee4-4f8f-a967-d94677864e7e" message="#[message.payload]"/>
+	</flow>
+	<flow name="testFlow1" doc:id="827478f4-5576-4bb9-a251-b9a4b2e44600" >
+		<jms:listener doc:name="Listener" doc:id="7ba74b9a-03fc-4048-bdff-bf7227d8bb00" config-ref="JMS_Config" destination="inbound-queue-poc2">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="0775c77a-d0b6-455d-8c5c-04ed7a0fed89" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="4072ad74-352d-48d1-a242-0b0f04e09095" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	companyCode: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.companyCode,
+	guid: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.guid,
+	date: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.date,
+	stage: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.stage,
+	finalStage: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.finalStage,
+	letterID: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.letterID,
+	capitaLetterID: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.capitaLetterID,
+	policyNumber: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.policyNumber,
+	customerName: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList.insertLogRequestItem.customerName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="126205e1-fd39-405e-9a5f-40b285d4d3b3" message="INSERT logger---------------------#[payload]"/>
+		<db:insert doc:name="Insert" doc:id="58980376-1db8-4a5b-ab06-dd8fb56538a0" config-ref="Database_Config">
+			<db:sql >INSERT INTO doctb
+VALUES (:companyCode,:guid,:date,:stage,:finalStage,:letterID,:capitaLetterID,:policyNumber,:customerName)</db:sql>
+			<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	'companyCode': payload.companyCode[0],
+	'date': payload.date[0],
+	'stage': payload.stage[0],
+	'policyNumber': payload.policyNumber[0],
+	'guid': payload.guid[0],
+	'letterID': payload.letterID[0],
+	'finalStage': payload.finalStage[0],
+	'capitaLetterID': payload.capitaLetterID[0],
+	'customerName': payload.customerName[0]
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="b03ebc3d-83d9-4308-a947-4725911cba33" message="#[message.payload]"/>
+	</flow>
+</mule>

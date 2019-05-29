@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="JsonToInsert" format="json">
+      <types:shape format="weave" example="examples/ToQueueNew.json"><![CDATA[%dw 2.0
+
+type JsonToInsert = {|
+  SoapEnv: {|
+    Header: {|
+      Identification: {|
+        UsernameToken: String, 
+        clientAccount: String, 
+        partnerName: String, 
+        requestDate: String, 
+        instanceID: String, 
+        environment: String
+      |}
+    |}, 
+    Body: {|
+      insertLogRequest: {|
+        insertLogRequestList: Array<{|          insertLogRequestItem: {|            companyCode: String,             guid: String,             date: String,             stage: String,             finalStage: String,             letterID: String,             capitaLetterID: String,             policyNumber: String,             customerName: String          |}        |}>
+      |}
+    |}
+  |}
+|} {"example": "{\"SoapEnv\":{\"Header\":{\"Identification\":{\"UsernameToken\":\"HiteshR\",\"clientAccount\":\"FriendsLife\",\"partnerName\":\"Not_APPLICABLE\",\"requestDate\":\"2018-04-03T10:36:01\",\"instanceID\":\"NA\",\"environment\":\"UAT\"}},\"Body\":{\"insertLogRequest\":{\"insertLogRequestList\":[{\"insertLogRequestItem\":{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}}]}}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="Insert" format="json">
+      <types:shape format="weave" example="examples/insertnew-1.json"><![CDATA[%dw 2.0
+
+type Insert = {|
+  companyCode: String, 
+  guid: String, 
+  date: String, 
+  stage: String, 
+  finalStage: String, 
+  letterID: String, 
+  capitaLetterID: String, 
+  policyNumber: String, 
+  customerName: String
+|} {"example": "{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#4072ad74-352d-48d1-a242-0b0f04e09095">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="JsonToInsert"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Insert"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
