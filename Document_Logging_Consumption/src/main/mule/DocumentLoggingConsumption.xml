@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="518abf11-6d92-4cef-b4a6-4aef59131cf1" >
 		<http:listener-connection host="0.0.0.0" port="8084" />
 	</http:listener-config>
-	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="61823f46-a592-49fb-b705-80d546a20b83" >
+	<jms:config name="JMS_Config" doc:name="JMS_Config" doc:id="61823f46-a592-49fb-b705-80d546a20b83" >
 		<jms:active-mq-connection username="admin" password="admin">
 			<jms:caching-strategy >
 				<jms:no-caching />
@@ -21,18 +21,13 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="87a94738-1483-4ce0-b054-deee4c18c034" >
 		<db:mssql-connection host="dbs-poc-euw-mspoc002.database.windows.net " user="mspoc002" password="qInmyp7h" databaseName="db_poc_euw_mspoc003" />
 	</db:config>
-	<flow name="testFlow" doc:id="3f8f7b2e-15e8-464a-9c0d-02838bd37588" >
-		<http:listener doc:name="Listener" doc:id="e72a976e-5ab1-47ae-ba77-ed6095067463" config-ref="HTTP_Listener_config" path="/mq2"/>
-		<jms:publish doc:name="Publish" doc:id="c19a64ee-994c-46c1-b347-ea8f8aa6fe83" config-ref="JMS_Config" destination="inbound-queue-poc2"/>
-		<logger level="INFO" doc:name="Logger" doc:id="288902a6-cee4-4f8f-a967-d94677864e7e" message="#[message.payload]"/>
-	</flow>
-	<flow name="testFlow1" doc:id="827478f4-5576-4bb9-a251-b9a4b2e44600" >
-		<jms:listener doc:name="Listener" doc:id="7ba74b9a-03fc-4048-bdff-bf7227d8bb00" config-ref="JMS_Config" destination="inbound-queue-poc2">
+	<flow name="InsertFlow" doc:id="827478f4-5576-4bb9-a251-b9a4b2e44600" >
+		<jms:listener doc:name="Listener" doc:id="7ba74b9a-03fc-4048-bdff-bf7227d8bb00" config-ref="JMS_Config" destination="insertLog-queue-poc1">
 			<jms:consumer-type >
 				<jms:queue-consumer />
 			</jms:consumer-type>
 		</jms:listener>
-		<logger level="INFO" doc:name="Logger" doc:id="0775c77a-d0b6-455d-8c5c-04ed7a0fed89" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0775c77a-d0b6-455d-8c5c-04ed7a0fed89" message="BEFORE TRANSFORMATION logger---------------------#[payload]"/>
 		<ee:transform doc:name="Transform Message" doc:id="4072ad74-352d-48d1-a242-0b0f04e09095" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -51,7 +46,7 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="126205e1-fd39-405e-9a5f-40b285d4d3b3" message="INSERT logger---------------------#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="126205e1-fd39-405e-9a5f-40b285d4d3b3" message="BEFORE INSERT ADAPTER logger---------------------#[payload]"/>
 		<db:insert doc:name="Insert" doc:id="58980376-1db8-4a5b-ab06-dd8fb56538a0" config-ref="Database_Config">
 			<db:sql >INSERT INTO doctb
 VALUES (:companyCode,:guid,:date,:stage,:finalStage,:letterID,:capitaLetterID,:policyNumber,:customerName)</db:sql>
@@ -70,6 +65,40 @@ output application/java
 	'customerName': payload.customerName[0]
 }]]]></db:input-parameters>
 		</db:insert>
-		<logger level="INFO" doc:name="Logger" doc:id="b03ebc3d-83d9-4308-a947-4725911cba33" message="#[message.payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b03ebc3d-83d9-4308-a947-4725911cba33" message="#[payload]"/>
+	</flow>
+	<flow name="UpdateFlow" doc:id="50b6a8df-88bc-4400-b013-e3aeec429a47" >
+		<jms:listener doc:name="Listener" doc:id="4cdebea5-a631-461b-9e9d-2720e5c865d9" config-ref="JMS_Config" destination="updateLog-queue-poc1">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="adf43a78-c86f-45a8-98a1-cfdd3de671de" message="BEFORE TRANSFORMATION logger---------------------#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c7e095fa-ae0b-46a2-989f-c8a7a6afd8a4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	guid: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList.updateLogRequestItem.guid,
+	date: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList.updateLogRequestItem.date,
+	stage: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList.updateLogRequestItem.stage,
+	finalStage: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList.updateLogRequestItem.finalStage,
+	capitaLetterID: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList.updateLogRequestItem.capitaLetterID
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="381f80fb-f78d-48a2-bee3-ab61225c34ae" message="BEFORE UPDATE ADAPTER Logger---------------------#[payload]"/>
+		<db:update doc:name="Update" doc:id="51d7023c-7ac6-4adb-9cff-2c68eb0735f3" config-ref="Database_Config">
+			<db:sql >update doctb set stage=:stage where guid=:guid</db:sql>
+			<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/java
+---
+{	
+	'stage': payload.stage[0],
+	'guid': payload.guid[0]	
+}]]]></db:input-parameters>
+		</db:update>
+		<logger level="INFO" doc:name="Logger" doc:id="acea7a6c-4947-4afb-82b0-fd856d3598c5" message="#[payload]"/>
 	</flow>
 </mule>

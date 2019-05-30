@@ -2,6 +2,12 @@
   "sampleData": {
     "b433e49d-a6e6-4419-ac69-ae778893a152": {
       "payload": "sample_data/defaultstringtype.dwl"
+    },
+    "4072ad74-352d-48d1-a242-0b0f04e09095": {
+      "payload": "sample_data/json.json"
+    },
+    "5c73b52e-8f98-4dbc-9e93-3b15804a3aa2": {
+      "payload": "sample_data/unknown.dwl"
     }
   }
 }

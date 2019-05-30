@@ -43,12 +43,51 @@ type Insert = {|
 
 ]]></types:shape>
     </types:type>
+    <types:type name="update" format="json">
+      <types:shape format="weave" example="examples/UpdateJSON (4)-2.json"><![CDATA[%dw 2.0
+
+type update = {|
+  SoapEnv: {|
+    Header: {|
+      Identification: {|
+        UsernameToken: String, 
+        clientAccount: String, 
+        partnerName: String, 
+        requestDate: String, 
+        instanceID: String, 
+        environment: String
+      |}
+    |}, 
+    Body: {|
+      updateLogRequest: {|
+        updateLogRequestList: Array<{|          updateLogRequestItem: {|            guid: String,             date: String,             stage: String,             finalStage: String,             capitaLetterID: String          |}        |}>
+      |}
+    |}
+  |}
+|} {"example": "{\"SoapEnv\":{\"Header\":{\"Identification\":{\"UsernameToken\":\"HiteshR\",\"clientAccount\":\"FriendsLife\",\"partnerName\":\"Not_APPLICABLE\",\"requestDate\":\"2018-04-03T10:36:01\",\"instanceID\":\"NA\",\"environment\":\"UAT\"}},\"Body\":{\"updateLogRequest\":{\"updateLogRequestList\":[{\"updateLogRequestItem\":{\"guid\":\"586394dd114377bdb8def9125c1c7d\",\"date\":\"2018-06-03T10:36:01\",\"stage\":\"750\",\"finalStage\":\"900\",\"capitaLetterID\":\"CAP004377bdb8def9125c1c7d\"}}]}}}}"}
+
+]]></types:shape>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#4072ad74-352d-48d1-a242-0b0f04e09095">
     <types:processor-declaration>
       <types:input-event>
         <types:message>
-          <types:payload type="JsonToInsert"/>
+          <types:payload type="update"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Insert"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c7e095fa-ae0b-46a2-989f-c8a7a6afd8a4">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="update"/>
         </types:message>
       </types:input-event>
       <types:output-event>

@@ -1,0 +1,34 @@
+{
+  "SoapEnv": {
+    "Header": {
+      "Identification": {
+        "UsernameToken": "HiteshR",
+        "clientAccount": "FriendsLife",
+        "partnerName": "Not_APPLICABLE",
+        "requestDate": "2018-04-03T10:36:01",
+        "instanceID": "NA",
+        "environment": "UAT"
+      }
+    },
+    "Body": {
+      "updateLogRequest": {
+        "updateLogRequestList":[{
+          "updateLogRequestItem": {
+            "guid": "58633394dd114377bdb8def9125c1c7d",
+            "date": "2018-04-03T10:36:01",
+            "stage": "700",
+            "finalStage": "900",
+            "capitaLetterID": "CAP114377bdb8def9125c1c7d"
+          },
+		  "updateLogRequestItem": {
+            "guid": "586394dd114377bdb8def9125c1c7d",
+            "date": "2018-06-03T10:36:01",
+            "stage": "750",
+            "finalStage": "900",
+            "capitaLetterID": "CAP004377bdb8def9125c1c7d"
+          }
+        }]
+      }
+    }
+  }
+}
