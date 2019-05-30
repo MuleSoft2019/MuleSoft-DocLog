@@ -25,6 +25,18 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
+				<cloudHubDeployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<muleVersion>4.2.0</muleVersion>
+						<username>${anypoint.username}</username>
+						<password>${anypoint.password}</password>
+						<applicationName>documentlogging-exp-api</applicationName>
+						<environment>Sandbox</environment>
+						<businessGroup>mspoc</businessGroup>
+						<properties>
+							<key>value</key>
+						</properties>
+					</cloudHubDeployment>
 				<sharedLibraries>
                         <sharedLibrary>
                             <groupId>org.apache.activemq</groupId>
@@ -40,6 +52,15 @@
                         </sharedLibrary>
                     </sharedLibraries>
                 </configuration>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
