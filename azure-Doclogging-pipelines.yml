@@ -19,4 +19,4 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: false
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'clean deploy -DmuleDeploy -DskipMuintTests -Danypoint.username=sameergaikwad -Danypoint.password=Password@123'
+    goals: 'clean package deploy -DmuleDeploy -DskipMuintTests -Danypoint.username=sameergaikwad -Danypoint.password=Password@123'
