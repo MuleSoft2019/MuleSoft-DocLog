@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="InsertOut" format="json">
+      <types:shape format="weave" example="examples/insertnew.json"><![CDATA[%dw 2.0
+
+type InsertOut = {|
+  companyCode: String, 
+  guid: String, 
+  date: String, 
+  stage: String, 
+  finalStage: String, 
+  letterID: String, 
+  capitaLetterID: String, 
+  policyNumber: String, 
+  customerName: String
+|} {"example": "{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="InsertIn" format="json">
+      <types:shape format="weave" example="examples/ToQueueNew.json"><![CDATA[%dw 2.0
+
+type InsertIn = {|
+  SoapEnv: {|
+    Header: {|
+      Identification: {|
+        UsernameToken: String, 
+        clientAccount: String, 
+        partnerName: String, 
+        requestDate: String, 
+        instanceID: String, 
+        environment: String
+      |}
+    |}, 
+    Body: {|
+      insertLogRequest: {|
+        insertLogRequestList: Array<{|          insertLogRequestItem: {|            companyCode: String,             guid: String,             date: String,             stage: String,             finalStage: String,             letterID: String,             capitaLetterID: String,             policyNumber: String,             customerName: String          |}        |}>
+      |}
+    |}
+  |}
+|} {"example": "{\"SoapEnv\":{\"Header\":{\"Identification\":{\"UsernameToken\":\"HiteshR\",\"clientAccount\":\"FriendsLife\",\"partnerName\":\"Not_APPLICABLE\",\"requestDate\":\"2018-04-03T10:36:01\",\"instanceID\":\"NA\",\"environment\":\"UAT\"}},\"Body\":{\"insertLogRequest\":{\"insertLogRequestList\":[{\"insertLogRequestItem\":{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}}]}}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="UpdateIn" format="json">
+      <types:shape format="weave" example="examples/UpdateJSON (4).json"><![CDATA[%dw 2.0
+
+type UpdateIn = {|
+  SoapEnv: {|
+    Header: {|
+      Identification: {|
+        UsernameToken: String, 
+        clientAccount: String, 
+        partnerName: String, 
+        requestDate: String, 
+        instanceID: String, 
+        environment: String
+      |}
+    |}, 
+    Body: {|
+      updateLogRequest: {|
+        updateLogRequestList: Array<{|          updateLogRequestItem: {|            guid: String,             date: String,             stage: String,             finalStage: String,             capitaLetterID: String          |}        |}>
+      |}
+    |}
+  |}
+|} {"example": "{\"SoapEnv\":{\"Header\":{\"Identification\":{\"UsernameToken\":\"HiteshR\",\"clientAccount\":\"FriendsLife\",\"partnerName\":\"Not_APPLICABLE\",\"requestDate\":\"2018-04-03T10:36:01\",\"instanceID\":\"NA\",\"environment\":\"UAT\"}},\"Body\":{\"updateLogRequest\":{\"updateLogRequestList\":[{\"updateLogRequestItem\":{\"guid\":\"586394dd114377bdb8def9125c1c7d\",\"date\":\"2018-06-03T10:36:01\",\"stage\":\"750\",\"finalStage\":\"900\",\"capitaLetterID\":\"CAP004377bdb8def9125c1c7d\"}}]}}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="UpdateOut" format="json">
+      <types:shape format="weave" example="examples/insertnew-1.json"><![CDATA[%dw 2.0
+
+type UpdateOut = {|
+  companyCode: String, 
+  guid: String, 
+  date: String, 
+  stage: String, 
+  finalStage: String, 
+  letterID: String, 
+  capitaLetterID: String, 
+  policyNumber: String, 
+  customerName: String
+|} {"example": "{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#b61aeddc-f526-47e6-9aa8-df4521decb6f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="InsertIn"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="InsertOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f8e8318a-99ec-4a8e-b142-dc6fde12e818">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="UpdateIn"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="UpdateOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

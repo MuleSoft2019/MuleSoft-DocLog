@@ -146,7 +146,7 @@ ns ns02 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="799c23bd-f044-401f-b75d-ecd9900cdbef" message="#[payload]"/>
 		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="9b99cca1-e97c-4d46-abbb-0c0e32607b1a" />
-		<jms:publish doc:name="Publish" doc:id="5636fccb-8448-49e2-8fc1-94419a2a6c9e" config-ref="JMS_Config" destination="insertLog-queue-poc1"/>
+		<jms:publish doc:name="Publish" doc:id="5636fccb-8448-49e2-8fc1-94419a2a6c9e" config-ref="JMS_Config" destination="insertLog-queue-poc1-v2"/>
     </flow>
 	<flow name="updateLog:\soapkit-config">
         <ee:transform doc:id="70b3d5ef-4c26-4403-811f-073f373b5f0e">
@@ -227,7 +227,7 @@ ns ns02 http://www.capita.co.uk/clps/schema/v1.0/documentloggingschema
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="41a48a32-6bd4-41c5-a7e3-e93439512b06" message="#[payload]"/>
 		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="7c2b1e47-4f47-48cf-ae90-15fa47b8c0f5" />
-		<jms:publish doc:name="Publish" doc:id="b7248b80-4025-41e0-b02f-5dc02057f79f" config-ref="JMS_Config" destination="updateLog-queue-poc1"/>
+		<jms:publish doc:name="Publish" doc:id="b7248b80-4025-41e0-b02f-5dc02057f79f" config-ref="JMS_Config" destination="updateLog-queue-poc1-v2"/>
     </flow>
     <flow name="insertExtraData:\soapkit-config">
         <ee:transform>
