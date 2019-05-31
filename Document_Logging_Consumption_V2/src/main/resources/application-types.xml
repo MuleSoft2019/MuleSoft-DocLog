@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="InsertData" format="json">
+      <types:shape format="weave" example="examples/insertnew-1.json"><![CDATA[%dw 2.0
+
+type InsertData = {|
+  companyCode: String, 
+  guid: String, 
+  date: String, 
+  stage: String, 
+  finalStage: String, 
+  letterID: String, 
+  capitaLetterID: String, 
+  policyNumber: String, 
+  customerName: String
+|} {"example": "{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="update" format="json">
+      <types:shape format="weave" example="examples/UpdateJSON (4)-1.json"><![CDATA[%dw 2.0
+
+type update = {|
+  SoapEnv: {|
+    Header: {|
+      Identification: {|
+        UsernameToken: String, 
+        clientAccount: String, 
+        partnerName: String, 
+        requestDate: String, 
+        instanceID: String, 
+        environment: String
+      |}
+    |}, 
+    Body: {|
+      updateLogRequest: {|
+        updateLogRequestList: Array<{|          updateLogRequestItem: {|            guid: String,             date: String,             stage: String,             finalStage: String,             capitaLetterID: String          |}        |}>
+      |}
+    |}
+  |}
+|} {"example": "{\"SoapEnv\":{\"Header\":{\"Identification\":{\"UsernameToken\":\"HiteshR\",\"clientAccount\":\"FriendsLife\",\"partnerName\":\"Not_APPLICABLE\",\"requestDate\":\"2018-04-03T10:36:01\",\"instanceID\":\"NA\",\"environment\":\"UAT\"}},\"Body\":{\"updateLogRequest\":{\"updateLogRequestList\":[{\"updateLogRequestItem\":{\"guid\":\"586394dd114377bdb8def9125c1c7d\",\"date\":\"2018-06-03T10:36:01\",\"stage\":\"750\",\"finalStage\":\"900\",\"capitaLetterID\":\"CAP004377bdb8def9125c1c7d\"}}]}}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="updateOut" format="json">
+      <types:shape format="weave" example="examples/insertnew.json"><![CDATA[%dw 2.0
+
+type updateOut = {|
+  companyCode: String, 
+  guid: String, 
+  date: String, 
+  stage: String, 
+  finalStage: String, 
+  letterID: String, 
+  capitaLetterID: String, 
+  policyNumber: String, 
+  customerName: String
+|} {"example": "{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="Insertin" format="json">
+      <types:shape format="weave" example="examples/ToQueueNew.json"><![CDATA[%dw 2.0
+
+type Insertin = {|
+  SoapEnv: {|
+    Header: {|
+      Identification: {|
+        UsernameToken: String, 
+        clientAccount: String, 
+        partnerName: String, 
+        requestDate: String, 
+        instanceID: String, 
+        environment: String
+      |}
+    |}, 
+    Body: {|
+      insertLogRequest: {|
+        insertLogRequestList: Array<{|          insertLogRequestItem: {|            companyCode: String,             guid: String,             date: String,             stage: String,             finalStage: String,             letterID: String,             capitaLetterID: String,             policyNumber: String,             customerName: String          |}        |}>
+      |}
+    |}
+  |}
+|} {"example": "{\"SoapEnv\":{\"Header\":{\"Identification\":{\"UsernameToken\":\"HiteshR\",\"clientAccount\":\"FriendsLife\",\"partnerName\":\"Not_APPLICABLE\",\"requestDate\":\"2018-04-03T10:36:01\",\"instanceID\":\"NA\",\"environment\":\"UAT\"}},\"Body\":{\"insertLogRequest\":{\"insertLogRequestList\":[{\"insertLogRequestItem\":{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}}]}}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="InsertOut" format="json">
+      <types:shape format="weave" example="examples/insertnew-2.json"><![CDATA[%dw 2.0
+
+type InsertOut = {|
+  companyCode: String, 
+  guid: String, 
+  date: String, 
+  stage: String, 
+  finalStage: String, 
+  letterID: String, 
+  capitaLetterID: String, 
+  policyNumber: String, 
+  customerName: String
+|} {"example": "{\"companyCode\":\"FL\",\"guid\":\"58633394dd114377bdb8def9125c1c7d\",\"date\":\"2018-04-03T10:36:01\",\"stage\":\"700\",\"finalStage\":\"900\",\"letterID\":\"114377bdb8def9125c1c7d\",\"capitaLetterID\":\"CAP114377bdb8def9125c1c7d\",\"policyNumber\":\"BA1000758\",\"customerName\":\"TestCustomer\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#a4093ce0-01e9-4d26-bf1a-def6c773b731">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Insertin"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:variables>
+          <types:variable name="Insert" type="Insertin"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5e426fda-9c98-41ca-a216-877117a8576a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="update"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="update"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d0147f08-e831-4f25-bbef-1648b921e765">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:attributes type="InsertData"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#0e2e023a-f134-4b8a-b52d-82e465f10942">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="InsertData"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="updateOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7c465fe7-fcc6-4e68-86ec-1ca247a4ace5">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="InsertOut"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="InsertOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#40115fa3-bc21-4ead-a55b-b40f37030ad9">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Insertin"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="InsertOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#e57f25bd-6c3a-4f73-b896-52a0b114f766">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="update"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="update"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="Update" type="update"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8091ffdc-50c6-4339-a881-fd33f755991f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="update"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="updateOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d6251025-d634-4d1a-9ac9-ae749d4a32c6">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="update"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="updateOut"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

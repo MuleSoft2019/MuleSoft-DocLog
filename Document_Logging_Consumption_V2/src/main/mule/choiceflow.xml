@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<jms:config name="JMS_Config" doc:name="JMS_Config" doc:id="b85f0601-ee12-4993-abc3-2d14fa4c4239" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://13.95.5.15:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="047dada7-7224-4978-8b4d-09d8f9734805" >
+		<db:mssql-connection host="dbs-poc-euw-mspoc002.database.windows.net" user="mspoc002" password="qInmyp7h" databaseName="db_poc_euw_mspoc4" />
+	</db:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="e0cd6f91-7490-4e28-945c-eaf1c9cbb72e" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="7dbd429c-34d6-4848-a9bd-04043603f485" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="795ac722-b0af-4657-a7fe-4d36bbc20975" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration3" doc:name="HTTP Request configuration" doc:id="24a3f41e-d00d-4358-9e66-c6f9aa8b2991" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="Insertchoiceflow" doc:id="6e9a3e03-1914-45d2-a0e3-fee7d8629895" >
+		<jms:listener doc:name="Listener" doc:id="1c8b876e-b714-4d7e-ba0c-cab9fe89a029" config-ref="JMS_Config" destination="insertLog-queue-poc1">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="9a46be36-f960-4eb5-81ca-c78e125bb3cf" message="------------------Logger Before Transformation In Insert ChoiceFlow---------------#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="a4093ce0-01e9-4d26-bf1a-def6c773b731">
+					<ee:message>
+					</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="Insert" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	SoapEnv: {
+		Header: {
+			Identification: {
+				clientAccount: payload.SoapEnv.Header.Identification.clientAccount
+			}
+		},
+		Body: {
+			insertLogRequest: {
+				insertLogRequestList: payload.SoapEnv.Body.insertLogRequest.insertLogRequestList map ( insertLogRequestList , indexOfInsertLogRequestList ) -> {
+					insertLogRequestItem: {
+						companyCode: insertLogRequestList.insertLogRequestItem.companyCode,
+						guid: insertLogRequestList.insertLogRequestItem.guid,
+						date: insertLogRequestList.insertLogRequestItem.date,
+						stage: insertLogRequestList.insertLogRequestItem.stage,
+						finalStage: insertLogRequestList.insertLogRequestItem.finalStage,
+						letterID: insertLogRequestList.insertLogRequestItem.letterID,
+						capitaLetterID: insertLogRequestList.insertLogRequestItem.capitaLetterID,
+						policyNumber: insertLogRequestList.insertLogRequestItem.policyNumber,
+						customerName: insertLogRequestList.insertLogRequestItem.customerName
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+				</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2cd94baa-5389-48a3-8fe5-641748a09409" message="------------------Logger After Transformation In Insert ChoiceFlow---------------#[payload]"/>
+		<set-variable value="#[%dw 2.0
+output application/java
+---
+vars.Insert.SoapEnv.Header.Identification.clientAccount]" doc:name="Set Variable" doc:id="d11adca8-3649-4ce0-a107-9db8c63a24bc" variableName="ClientAccount"/>
+		<choice doc:name="Insert Choice" doc:id="22006376-d184-4557-80c0-f01575141aa6" tracking:enable-default-events="true">
+			<when doc:id="7db84c91-ee3d-48c5-bd09-bc0c7ca598b6" expression='#[vars.ClientAccount=="FriendsLife"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="d3cce4da-f96b-4534-9051-027708025940" message="------------------Logger  in Insert Choice of Insert ChoiceFlow ForClient  Friends_Life- in InsertChoice--------------#[payload]" />
+				<http:request method="POST" doc:name="Request" doc:id="d8ccb365-0d7e-4acf-b81c-e0d9ce38c97e" config-ref="HTTP_Request_configuration" path="/second/insert"/>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="f04b130b-c476-4550-baa0-0e15a8231fc3" message="------------------Logger  in Default Choice of Insert ChoiceFlow in Insert Choice---------------#[payload]" />
+				<http:request method="POST" doc:name="Request" doc:id="74bf64e5-7bf7-4b3d-bc6d-961b776f1e7e" config-ref="HTTP_Request_configuration1" path="/first/insert"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="UpdateChoiceFlow" doc:id="764f94f2-4834-4585-a40a-abff6a24f0af" >
+		<jms:listener doc:name="Listener" doc:id="47fd92ba-1027-46a6-8b49-915656c466f3" config-ref="JMS_Config" destination="updateLog-queue-poc1">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="e9ffa428-aae1-403b-a058-7472803f3c15" message="------------------Logger Before Transformation In Update ChoiceFlow---------------#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="e57f25bd-6c3a-4f73-b896-52a0b114f766" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	SoapEnv: {
+		Header: {
+			Identification: {
+				clientAccount: payload.SoapEnv.Header.Identification.clientAccount
+			}
+		},
+		Body: {
+			updateLogRequest: {
+				updateLogRequestList: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList map ( updateLogRequestList , indexOfUpdateLogRequestList ) -> {
+					updateLogRequestItem: {
+						guid: updateLogRequestList.updateLogRequestItem.guid,
+						date: updateLogRequestList.updateLogRequestItem.date,
+						stage: updateLogRequestList.updateLogRequestItem.stage,
+						finalStage: updateLogRequestList.updateLogRequestItem.finalStage,
+						capitaLetterID: updateLogRequestList.updateLogRequestItem.capitaLetterID
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="Update" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	SoapEnv: {
+		Header: {
+			Identification: {
+				UsernameToken: payload.SoapEnv.Header.Identification.UsernameToken
+			}
+		},
+		Body: {
+			updateLogRequest: {
+				updateLogRequestList: payload.SoapEnv.Body.updateLogRequest.updateLogRequestList map ( updateLogRequestList , indexOfUpdateLogRequestList ) -> {
+					updateLogRequestItem: {
+						guid: updateLogRequestList.updateLogRequestItem.guid,
+						date: updateLogRequestList.updateLogRequestItem.date,
+						stage: updateLogRequestList.updateLogRequestItem.stage,
+						finalStage: updateLogRequestList.updateLogRequestItem.finalStage,
+						capitaLetterID: updateLogRequestList.updateLogRequestItem.capitaLetterID
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="36d00f77-85e6-4a9b-9423-8d6a7b6fa22a" message="------------------Logger After Transformation In Update ChoiceFlow---------------#[payload]"/>
+		<set-variable doc:name="Set Variable" doc:id="b25bbf10-d81e-4869-901a-4dd508971b2a" variableName="ClientAccountUpdate" value="#[%dw 2.0
+output application/java
+---
+payload.SoapEnv.Header.Identification.clientAccount]"/>
+		<choice doc:name="UpdateChoice" doc:id="eb7109bc-bedf-4ed2-a56b-9207056195d5" >
+			<when expression='#[vars.ClientAccountUpdate=="FriendsLife"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="d4c68af7-93e8-4a03-8f75-994a1a5c35ae" message="------------------Logger  in Update Choice of Update ChoiceFlow ForClient  Friends_Life- in UpdateChoice--------------#[payload]"/>
+				<http:request method="POST" doc:name="Request" doc:id="12ff9c3d-2cb4-4577-bffc-949c089de22a" config-ref="HTTP_Request_configuration2" path="/second/update"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="9a800aff-cc4c-4896-ab7a-f1ffd437a7a5" message="------------------Logger  in Update Choice of Update Defaulte- in UpdateChoice--------------#[payload]"/>
+				<http:request method="POST" doc:name="Request" doc:id="e036dc0c-eb83-45e7-a4c2-c3e453704e7b" config-ref="HTTP_Request_configuration3" path="/first/update"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
