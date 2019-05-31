@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="518abf11-6d92-4cef-b4a6-4aef59131cf1" >
-		<http:listener-connection host="0.0.0.0" port="8084" />
+		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	<jms:config name="JMS_Config" doc:name="JMS_Config" doc:id="61823f46-a592-49fb-b705-80d546a20b83" >
 		<jms:active-mq-connection username="admin" password="admin">
